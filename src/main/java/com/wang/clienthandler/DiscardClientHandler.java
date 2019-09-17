@@ -18,13 +18,12 @@ public class DiscardClientHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
+        ctx.writeAndFlush("hello server");
+    }
 
-        // Initialize the message.
-        content = ctx.alloc().directBuffer(DiscardClient.SIZE).writeZero(DiscardClient.SIZE);
-
-        // Send the initial messages.
-        generateTraffic();
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        super.channelRead(ctx, msg);
     }
 
     @Override
@@ -43,23 +42,4 @@ public class DiscardClientHandler extends SimpleChannelInboundHandler<Object> {
         cause.printStackTrace();
         ctx.close();
     }
-
-    long counter;
-
-    private void generateTraffic() {
-        // Flush the outbound buffer to the socket.
-        // Once flushed, generate the same amount of traffic again.
-        ctx.writeAndFlush(content.duplicate().retain()).addListener(trafficGenerator);
-    }
-
-    private final ChannelFutureListener trafficGenerator = new ChannelFutureListener() {
-        public void operationComplete(ChannelFuture future) {
-            if (future.isSuccess()) {
-                generateTraffic();
-            } else {
-                future.cause().printStackTrace();
-                future.channel().close();
-            }
-        }
-    };
 }

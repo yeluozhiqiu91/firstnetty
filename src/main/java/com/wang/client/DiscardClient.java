@@ -1,16 +1,16 @@
 package com.wang.client;
 
 import com.wang.clienthandler.DiscardClientHandler;
+import com.wang.clienthandler.FirstClientHandler;
+import com.wang.clienthandler.TimeClientHandler;
+import com.wang.server.DiscardServer;
+import com.wang.serverhandler.TimeServerHandler;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 
 /**
  * @Author: wangliujie
@@ -18,43 +18,43 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
  */
 public final class DiscardClient {
 
-    public static final boolean SSL = System.getProperty("ssl") != null;
-    public static final String HOST = System.getProperty("host", "127.0.0.1");
-    public static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
-    public static final int SIZE = Integer.parseInt(System.getProperty("size", "256"));
-
-    public static void main(String[] args) throws Exception {
-        // Configure SSL.
-        final SslContext sslCtx;
-        if (SSL) {
-            sslCtx = SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
-        } else {
-            sslCtx = null;
-        }
-
+    public void connect(String host,int port) throws Exception{
+        //配置客户端nio线程组
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
+                    .option(ChannelOption.TCP_NODELAY,true)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline p = ch.pipeline();
-                            if (sslCtx != null) {
-                                p.addLast(sslCtx.newHandler(ch.alloc(), HOST, PORT));
-                            }
-                            p.addLast(new DiscardClientHandler());
+                            ch.pipeline().addLast(new FirstClientHandler());
+//                            .addLast(new FixedLengthFrameDecoder(7));
                         }
                     });
 
             // Make the connection attempt.
-            ChannelFuture f = b.connect(HOST, PORT).sync();
+            ChannelFuture f = b.connect(host, port).sync();
 
             // Wait until the connection is closed.
             f.channel().closeFuture().sync();
         } finally {
             group.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        int port = 8888;
+        if (args !=null && args.length > 0) {
+            try {
+                port = Integer.valueOf(args[0]);
+            }catch (NumberFormatException e){
+                //
+                port = 8888;
+            }
+
+        }
+        new DiscardClient().connect("127.0.0.1",8888);
     }
 }
