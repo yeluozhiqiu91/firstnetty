@@ -1,14 +1,12 @@
-package com.wang.clienthandler;
+package com.wang.demo0.clienthandler;
 
-import com.wang.serverhandler.TimeServerHandler;
+import com.wang.demo0.serverhandler.TimeServerHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * @Author: wangliujie

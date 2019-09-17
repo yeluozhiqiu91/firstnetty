@@ -1,4 +1,4 @@
-package com.wang.clienthandler;
+package com.wang.demo0.clienthandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerAdapter;

@@ -1,16 +1,11 @@
-package com.wang.client;
+package com.wang.demo0.client;
 
-import com.wang.clienthandler.DiscardClientHandler;
-import com.wang.clienthandler.FirstClientHandler;
-import com.wang.clienthandler.TimeClientHandler;
-import com.wang.server.DiscardServer;
-import com.wang.serverhandler.TimeServerHandler;
+import com.wang.demo0.clienthandler.FirstClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
 
 /**
  * @Author: wangliujie
