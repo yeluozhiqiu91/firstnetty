@@ -26,6 +26,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println("exceptionCaught方法被触发");
         cause.printStackTrace();
         ctx.close();
     }
